@@ -3,46 +3,8 @@
   var __slice = [].slice;
 
   (function($) {
-    var cancel, disable, enable, firstChild, getSelector, hideOverlay, hovered, keyMap, log, nextSibling, notEmpty, onClick, onKeyDown, onKeyUp, onMouseMove, overlay, prevSibling, propChain, selectElement, setOverlayText, showOverlay, waiting;
+    var cancel, disable, enable, firstChild, getSelector, hideOverlay, hovered, keyMap, log, nextSibling, notEmpty, onClick, onKeyDown, onKeyUp, onMouseMove, overlay, prevSibling, selectElement, setOverlayText, showOverlay, waiting;
 
-    console.log("Loading dom-selector plugin");
-    propChain = function(prop, filter) {
-      if (filter == null) {
-        filter = function() {
-          return true;
-        };
-      }
-      return function() {
-        var cur, ret;
-
-        ret = $();
-        if (this.length > 0) {
-          cur = this[0][prop];
-          while (cur) {
-            if (filter(cur)) {
-              ret.push(cur);
-            }
-            cur = cur[prop];
-          }
-        }
-        return ret;
-      };
-    };
-    $.fn.parentChain = propChain('parentNode');
-    $.fn.selectProperty = function(prop) {
-      var x;
-
-      return $((function() {
-        var _i, _len, _results;
-
-        _results = [];
-        for (_i = 0, _len = this.length; _i < _len; _i++) {
-          x = this[_i];
-          _results.push(x[prop]);
-        }
-        return _results;
-      }).call(this));
-    };
     log = function() {
       var args;
 
@@ -50,9 +12,9 @@
       args.unshift("dom-selector:");
       return console.log.apply(console, args);
     };
+    log("Loading...");
     waiting = null;
-    overlay = $("<div class='dom-selector-overlay' style='display:none'>Overlay</div>");
-    log(overlay);
+    overlay = $("<div id='dom-selector-overlay' style='display:none'>Overlay</div>");
     $(document).ready(function() {
       return overlay.appendTo("body");
     });
@@ -76,7 +38,7 @@
       });
     };
     setOverlayText = function(message) {
-      return $("div.dom-selector-overlay").text(message);
+      return $("div#dom-selector-overlay").text(message);
     };
     notEmpty = function(i, s) {
       return (s != null ? s.length : void 0) > 0;
@@ -150,7 +112,7 @@
       update: function(target) {
         var _ref;
 
-        if (!((target != null) || target === ((_ref = this.element) != null ? _ref[0] : void 0))) {
+        if ((target == null) || (target === ((_ref = this.element) != null ? _ref[0] : void 0)) || (target === overlay[0])) {
           return;
         }
         this.unhighlight();
@@ -160,6 +122,7 @@
       }
     };
     keyMap = {
+      13: "enter",
       37: "left",
       38: "up",
       39: "right",
@@ -204,7 +167,6 @@
     onKeyUp = function(event) {
       var element, _ref;
 
-      log("keyup", event.keyCode, keyMap[event.keyCode]);
       element = (_ref = hovered.element) != null ? _ref[0] : void 0;
       if (element == null) {
         return;
@@ -219,6 +181,8 @@
             return nextSibling(element);
           case "up":
             return prevSibling(element);
+          case "enter":
+            return onClick(event);
           default:
             return null;
         }
@@ -228,7 +192,6 @@
       }
     };
     onKeyDown = function(event) {
-      log("keydown", event.keyCode, keyMap[event.keyCode]);
       switch (keyMap[event.keyCode]) {
         case "left":
         case "right":

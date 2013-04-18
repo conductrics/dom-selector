@@ -8,32 +8,18 @@
 # traps to avoid: when the overlay is showing, skip it when finding the hovered element
 
 do ($ = window.jQuery) ->
-	console.log "Loading dom-selector plugin"
-
-	propChain = (prop, filter = -> true ) ->
-		->
-			ret = $()
-			if this.length > 0
-				cur = this[0][prop]
-				while cur
-					if filter cur then ret.push cur
-					cur = cur[prop]
-			return ret
-
-	$.fn.parentChain = propChain('parentNode')
-
-	$.fn.selectProperty = (prop) -> $ (x[prop] for x in this)
 
 	log = (args...) ->
 		args.unshift "dom-selector:"
 		console.log.apply console, args
 
+	log "Loading..."
+
 	# The callback passed to .selectElement
 	waiting = null
 
 	# Shows the controls
-	overlay = $("<div class='dom-selector-overlay' style='display:none'>Overlay</div>")
-	log overlay
+	overlay = $("<div id='dom-selector-overlay' style='display:none'>Overlay</div>")
 	$(document).ready -> overlay.appendTo("body")
 	showOverlay = (x,y,w,h) ->
 		overlay.css({
@@ -51,7 +37,7 @@ do ($ = window.jQuery) ->
 	hideOverlay = ->
 		overlay.css display: "none"
 	setOverlayText = (message) ->
-		$("div.dom-selector-overlay").text(message)
+		$("div#dom-selector-overlay").text(message)
 
 	notEmpty = (i, s) -> s?.length > 0
 
@@ -107,7 +93,8 @@ do ($ = window.jQuery) ->
 					# border: "1px solid rgba(255,0,0,.5)"
 				}
 		update: (target) ->
-			return unless target? or target is @element?[0]
+			if (not target?) or (target is @element?[0]) or (target is overlay[0])
+				return
 			@unhighlight()
 			# target.scrollIntoView()
 			@element = $(target)
@@ -115,6 +102,7 @@ do ($ = window.jQuery) ->
 			setOverlayText getSelector target
 	}
 	keyMap = {
+		13: "enter"
 		37: "left"
 		38: "up"
 		39: "right"
@@ -129,12 +117,12 @@ do ($ = window.jQuery) ->
 	
 	firstChild = (elem) ->
 		child = elem.childNodes[0]
-		while child? and child.nodeType isnt 1
+		while child? and child.nodeType isnt 1 # skip Text Nodes
 			child = child.nextSibling
 		return child
 	nextSibling = (elem) ->
 		next = elem.nextSibling
-		while next? and next.nodeType isnt 1
+		while next? and next.nodeType isnt 1 # skip Text Nodes
 			next = next.nextSibling
 		return next
 	prevSibling = (elem) ->
@@ -152,6 +140,7 @@ do ($ = window.jQuery) ->
 			when "right" then firstChild element
 			when "down" then nextSibling element
 			when "up" then prevSibling element
+			when "enter" then onClick(event)
 			else null
 		if event.keyCode of keyMap
 			return cancel(event)
