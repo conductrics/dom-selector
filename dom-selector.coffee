@@ -19,7 +19,7 @@ do ($ = window.jQuery) ->
 	waiting = null
 
 	# Shows the controls
-	overlay = $("<div id='dom-selector-overlay' style='display:none'>Overlay</div>")
+	overlay = $("<div id='dom-selector-overlay' style='display:none'><p class='selector-hint' style='margin-bottom:10px'>Move your mouse to highlight an area.<br />Click to select it and return to Conductrics.</p><p class='current-selector' style='color:#226'></p></div>")
 	$(document).ready -> overlay.appendTo("body")
 	showOverlay = (x,y,w,h) ->
 		overlay.css({
@@ -29,15 +29,26 @@ do ($ = window.jQuery) ->
 			width: parseInt(w) + "px"
 			height: parseInt(h) + "px"
 			background: "#ffc"
+			"padding": "10px 5px"
 			"border-radius": "5px"
+			"border-color": "silver"
+			"border-width": "1px"
+			"border-style": "solid"
+			"box-shadow":"1px 1px 2px silver"
+			"opacity": 0.9
 			"text-align": "center"
 			"z-index": 9999
-			display: "block"
+			"line-height": 1
+			"color": "#222"
+			"display": "block"
+			"vertical-align": 'baseline'
+			"font-size": "10pt"
+			"font": "sans-serif"
 		})
 	hideOverlay = ->
 		overlay.css display: "none"
 	setOverlayText = (message) ->
-		$("div#dom-selector-overlay").text(message)
+		$("div#dom-selector-overlay .current-selector").text(message)
 
 	notEmpty = (i, s) -> s?.length > 0
 
@@ -93,7 +104,7 @@ do ($ = window.jQuery) ->
 					# border: "1px solid rgba(255,0,0,.5)"
 				}
 		update: (target) ->
-			if (not target?) or (target is @element?[0]) or (target is overlay[0])
+			if (not target?) or (target is @element?[0]) or (overlay.is(target)) or (overlay.has(target).length)
 				return
 			@unhighlight()
 			# target.scrollIntoView()
@@ -114,7 +125,7 @@ do ($ = window.jQuery) ->
 		evt.stopPropagation()
 		evt.cancelBubble = true
 		return false
-	
+
 	firstChild = (elem) ->
 		child = elem.childNodes[0]
 		while child? and child.nodeType isnt 1 # skip Text Nodes
@@ -149,6 +160,7 @@ do ($ = window.jQuery) ->
 			when "left","right","up","down" then cancel(event)
 			else return true
 	onClick = (event) ->
+		return cancel(event) if (overlay.is(event.target)) or (overlay.has(event.target).length)
 		waiting?(hovered.element)
 		cancel(event)
 

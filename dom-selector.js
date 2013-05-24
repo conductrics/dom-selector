@@ -14,7 +14,7 @@
     };
     log("Loading...");
     waiting = null;
-    overlay = $("<div id='dom-selector-overlay' style='display:none'>Overlay</div>");
+    overlay = $("<div id='dom-selector-overlay' style='display:none'><p class='selector-hint' style='margin-bottom:10px'>Move your mouse to highlight an area.<br />Click to select it and return to Conductrics.</p><p class='current-selector' style='color:#226'></p></div>");
     $(document).ready(function() {
       return overlay.appendTo("body");
     });
@@ -26,10 +26,21 @@
         width: parseInt(w) + "px",
         height: parseInt(h) + "px",
         background: "#ffc",
+        "padding": "10px 5px",
         "border-radius": "5px",
+        "border-color": "silver",
+        "border-width": "1px",
+        "border-style": "solid",
+        "box-shadow": "1px 1px 2px silver",
+        "opacity": 0.9,
         "text-align": "center",
         "z-index": 9999,
-        display: "block"
+        "line-height": 1,
+        "color": "#222",
+        "display": "block",
+        "vertical-align": 'baseline',
+        "font-size": "10pt",
+        "font": "sans-serif"
       });
     };
     hideOverlay = function() {
@@ -38,7 +49,7 @@
       });
     };
     setOverlayText = function(message) {
-      return $("div#dom-selector-overlay").text(message);
+      return $("div#dom-selector-overlay .current-selector").text(message);
     };
     notEmpty = function(i, s) {
       return (s != null ? s.length : void 0) > 0;
@@ -112,7 +123,7 @@
       update: function(target) {
         var _ref;
 
-        if ((target == null) || (target === ((_ref = this.element) != null ? _ref[0] : void 0)) || (target === overlay[0])) {
+        if ((target == null) || (target === ((_ref = this.element) != null ? _ref[0] : void 0)) || (overlay.is(target)) || (overlay.has(target).length)) {
           return;
         }
         this.unhighlight();
@@ -203,6 +214,9 @@
       }
     };
     onClick = function(event) {
+      if ((overlay.is(event.target)) || (overlay.has(event.target).length)) {
+        return cancel(event);
+      }
       if (typeof waiting === "function") {
         waiting(hovered.element);
       }
