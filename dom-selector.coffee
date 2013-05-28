@@ -191,8 +191,11 @@ do ($ = window.jQuery) ->
 			disable()
 			cb?(selected[0], getSelector(selected[0]))
 		enable()
-
-	$.extend jQuery,
-		selectElement: selectElement
-		getSelector: getSelector
+	
+	window.DOMSelector or= {}
+	do window.DOMSelector.attach = (jQ = window.jQuery) ->
+		# also changes which jQuery is used in the code above
+		$ = jQ.extend jQ,
+			selectElement: selectElement
+			getSelector: getSelector
 

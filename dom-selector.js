@@ -240,10 +240,13 @@
       };
       return enable();
     };
-    return $.extend(jQuery, {
-      selectElement: selectElement,
-      getSelector: getSelector
-    });
+    window.DOMSelector || (window.DOMSelector = {});
+    return (window.DOMSelector.attach = function(jQ) {
+      return $ = jQ.extend(jQ, {
+        selectElement: selectElement,
+        getSelector: getSelector
+      });
+    })(window.jQuery);
   })(window.jQuery);
 
 }).call(this);
