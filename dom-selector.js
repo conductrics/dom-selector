@@ -123,7 +123,7 @@
       update: function(target) {
         var _ref;
 
-        if ((target == null) || (target === ((_ref = this.element) != null ? _ref[0] : void 0)) || (overlay.is(target)) || (overlay.has(target).length)) {
+        if ((target == null) || (target === ((_ref = this.element) != null ? _ref[0] : void 0)) || (overlay[0] === target) || (overlay.has(target).length)) {
           return;
         }
         this.unhighlight();

@@ -104,7 +104,7 @@ do ($ = window.jQuery) ->
 					# border: "1px solid rgba(255,0,0,.5)"
 				}
 		update: (target) ->
-			if (not target?) or (target is @element?[0]) or (overlay.is(target)) or (overlay.has(target).length)
+			if (not target?) or (target is @element?[0]) or (overlay[0] is target) or (overlay.has(target).length)
 				return
 			@unhighlight()
 			# target.scrollIntoView()
