@@ -25,7 +25,6 @@
         left: parseInt(x) + "px",
         width: parseInt(w) + "px",
         height: parseInt(h) + "px",
-        background: "#ffc",
         "padding": "10px 5px",
         "border-radius": "5px",
         "border-color": "silver",
@@ -33,14 +32,29 @@
         "border-style": "solid",
         "box-shadow": "1px 1px 2px silver",
         "opacity": 0.9,
+        "z-index": 99999999,
+        background: "#ffc",
         "text-align": "center",
-        "z-index": 9999,
         "line-height": 1,
         "color": "#222",
         "display": "block",
+        "margin": 0,
         "vertical-align": 'baseline',
         "font-size": "10pt",
         "font": "sans-serif"
+      }).find('p').css({
+        "text-align": "center",
+        "line-height": 1,
+        "color": "#222",
+        "display": "block",
+        "padding": "0",
+        "margin": "0",
+        "margin-bottom": "10px",
+        "vertical-align": 'baseline',
+        "font-size": "10pt",
+        "font": "sans-serif"
+      }).find('p.current-selector').css({
+        color: '#226'
       });
     };
     hideOverlay = function() {
