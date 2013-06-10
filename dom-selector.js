@@ -3,7 +3,7 @@
   var __slice = [].slice;
 
   (function($) {
-    var cancel, disable, enable, firstChild, getSelector, hideOverlay, hovered, keyMap, log, nextSibling, notEmpty, onClick, onKeyDown, onKeyUp, onMouseMove, overlay, prevSibling, selectElement, setOverlayText, showOverlay, waiting;
+    var cancel, disable, enable, firstChild, getSelector, hideOverlay, hovered, keyMap, log, nextSibling, nodeContains, notEmpty, onClick, onKeyDown, onKeyUp, onMouseMove, overlay, prevSibling, selectElement, setOverlayText, showOverlay, waiting;
 
     log = function() {
       var args;
@@ -137,7 +137,10 @@
       update: function(target) {
         var _ref;
 
-        if ((target == null) || (target === ((_ref = this.element) != null ? _ref[0] : void 0)) || (overlay[0] === target) || (overlay.has(target).length)) {
+        if (target === null || target === (void 0) || target === ((_ref = this.element) != null ? _ref[0] : void 0) || target === overlay[0]) {
+          return;
+        }
+        if (nodeContains(overlay[0], target)) {
           return;
         }
         this.unhighlight();
@@ -145,6 +148,18 @@
         this.highlight();
         return setOverlayText(getSelector(target));
       }
+    };
+    nodeContains = function(node, target) {
+      var child, _i, _len, _ref;
+
+      _ref = node.childNodes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        if (child === target || nodeContains(child, target)) {
+          return true;
+        }
+      }
+      return false;
     };
     keyMap = {
       13: "enter",
@@ -228,7 +243,7 @@
       }
     };
     onClick = function(event) {
-      if ((overlay.is(event.target)) || (overlay.has(event.target).length)) {
+      if (overlay[0] === event.target || nodeContains(overlay[0], event.target)) {
         return cancel(event);
       }
       if (typeof waiting === "function") {

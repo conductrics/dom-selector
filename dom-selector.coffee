@@ -120,14 +120,19 @@ do ($ = window.jQuery) ->
 					# border: "1px solid rgba(255,0,0,.5)"
 				}
 		update: (target) ->
-			if (not target?) or (target is @element?[0]) or (overlay[0] is target) or (overlay.has(target).length)
-				return
+			return if target in [ null, undefined, @element?[0], overlay[0] ]
+			return if nodeContains(overlay[0], target)
 			@unhighlight()
 			# target.scrollIntoView()
 			@element = $(target)
 			@highlight()
 			setOverlayText getSelector target
 	}
+	nodeContains = (node, target) ->
+		for child in node.childNodes
+			if child is target or nodeContains(child, target)
+				return true
+		return false
 	keyMap = {
 		13: "enter"
 		37: "left"
@@ -176,7 +181,8 @@ do ($ = window.jQuery) ->
 			when "left","right","up","down" then cancel(event)
 			else return true
 	onClick = (event) ->
-		return cancel(event) if (overlay.is(event.target)) or (overlay.has(event.target).length)
+		if overlay[0] is event.target or nodeContains(overlay[0], event.target)
+			return cancel(event)
 		waiting?(hovered.element)
 		cancel(event)
 
