@@ -19,41 +19,33 @@
       return overlay.appendTo("body");
     });
     showOverlay = function(x, y, w, h) {
-      return overlay.css({
+      var commonStyles;
+
+      commonStyles = {
+        display: "block",
+        color: "#222",
+        font: "10pt / 1 sans-serif",
+        verticalAlign: 'baseline',
+        textAlign: "center"
+      };
+      return overlay.css($.extend({
         position: "fixed",
         top: parseInt(y) + "px",
         left: parseInt(x) + "px",
         width: parseInt(w) + "px",
-        height: parseInt(h) + "px",
-        "padding": "10px 5px",
-        "border-radius": "5px",
-        "border-color": "silver",
-        "border-width": "1px",
-        "border-style": "solid",
-        "box-shadow": "1px 1px 2px silver",
-        "opacity": 0.9,
-        "z-index": 99999999,
-        background: "#ffc",
-        "text-align": "center",
-        "line-height": 1,
-        "color": "#222",
-        "display": "block",
-        "margin": 0,
-        "vertical-align": 'baseline',
-        "font-size": "10pt",
-        "font": "sans-serif"
-      }).find('p').css({
-        "text-align": "center",
-        "line-height": 1,
-        "color": "#222",
-        "display": "block",
-        "padding": "0",
-        "margin": "0",
-        "margin-bottom": "10px",
-        "vertical-align": 'baseline',
-        "font-size": "10pt",
-        "font": "sans-serif"
-      }).find('p.current-selector').css({
+        height: "auto",
+        minHeight: parseInt(h) + "px",
+        padding: "10px 5px",
+        border: "1px solid silver",
+        borderRadius: "5px",
+        boxShadow: "1px 1px 2px silver",
+        opacity: 0.9,
+        zIndex: 99999999,
+        background: "#ffc"
+      }, common)).find('p').css($.extend({
+        padding: 0,
+        margin: "0 0 10px 0"
+      }, common)).find('p.current-selector').css({
         color: '#226'
       });
     };
@@ -72,19 +64,28 @@
       var nthChild;
 
       nthChild = function(elem) {
-        var i, parent, _i, _ref;
+        var i, nthName, nthStack, parent, _i, _ref;
 
         if (((elem == null) || (elem.ownerDocument == null), elem === document || elem === document.body || elem === document.head)) {
           return "";
         }
         if (parent = elem != null ? elem.parentNode : void 0) {
+          nthStack = [];
           for (i = _i = 0, _ref = parent.childNodes.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+            nthName = parent.childNodes[i].nodeName.toLowerCase();
+            if (nthName === "#text") {
+              continue;
+            }
+            nthStack.push(nthName);
             if (parent.childNodes[i] === elem) {
-              return ":nth-child(" + i + ")";
+              if (nthStack.length > 1) {
+                nthStack[0] += ":first-child";
+              }
+              return nthStack.join(" + ");
             }
           }
         }
-        return "";
+        return elem.nodeName.toLowerCase();
       };
       return function(element) {
         var hasClass, hasId, hasParent, isElement, isRoot, s;
@@ -103,9 +104,9 @@
             case hasId:
               return "#" + element.id;
             case hasClass:
-              return "." + element.className.split(" ").join(".");
+              return "." + element.className.split(" ").join(".").replace(/\.$/, '');
             default:
-              return element.nodeName.toLowerCase() + nthChild(element);
+              return nthChild(element);
           }
         })();
         if (hasId) {

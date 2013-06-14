@@ -22,45 +22,36 @@ do ($ = window.jQuery) ->
 	overlay = $("<div id='dom-selector-overlay' style='display:none'><p class='selector-hint' style='margin-bottom:10px'>Move your mouse to highlight an area.<br />Click to select it and return to Conductrics.</p><p class='current-selector' style='color:#226'></p></div>")
 	$(document).ready -> overlay.appendTo("body")
 	showOverlay = (x,y,w,h) ->
-		overlay.css({
-			position: "fixed"
-			top: parseInt(y) + "px"
-			left: parseInt(x) + "px"
-			width: parseInt(w) + "px"
-			height: parseInt(h) + "px"
-			"padding": "10px 5px"
-			"border-radius": "5px"
-			"border-color": "silver"
-			"border-width": "1px"
-			"border-style": "solid"
-			"box-shadow":"1px 1px 2px silver"
-			"opacity": 0.9
-			"z-index": 99999999
-			background: "#ffc"
-			# common
-			"text-align": "center"
-			"line-height": 1
-			"color": "#222"
-			"display": "block"
-			"margin": 0
-			"vertical-align": 'baseline'
-			"font-size": "10pt"
-			"font": "sans-serif"
-		}).find('p').css({
-			# common
-			"text-align": "center"
-			"line-height": 1
-			"color": "#222"
-			"display": "block"
-			"padding": "0"
-			"margin": "0"
-			"margin-bottom": "10px"
-			"vertical-align": 'baseline'
-			"font-size": "10pt"
-			"font": "sans-serif"
-		}).find('p.current-selector').css({
+		commonStyles =
+			display: "block"
+			color: "#222"
+			font: "10pt / 1 sans-serif"
+			verticalAlign: 'baseline'
+			textAlign: "center"
+		overlay.css(
+			$.extend {
+				position: "fixed"
+				top: parseInt(y) + "px"
+				left: parseInt(x) + "px"
+				width: parseInt(w) + "px"
+				height: "auto"
+				minHeight: parseInt(h) + "px"
+				padding: "10px 5px"
+				border: "1px solid silver"
+				borderRadius: "5px"
+				boxShadow:"1px 1px 2px silver"
+				opacity: 0.9
+				zIndex: 99999999
+				background: "#ffc"
+			}, common
+		).find('p').css(
+			$.extend {
+				padding: 0
+				margin: "0 0 10px 0"
+			}, common
+		).find('p.current-selector').css(
 			color: '#226'
-		})
+		)
 	hideOverlay = ->
 		overlay.css display: "none"
 	setOverlayText = (message) ->
@@ -79,10 +70,16 @@ do ($ = window.jQuery) ->
 				elem is document.head
 			)
 			if parent = elem?.parentNode
+				nthStack = []
 				for i in [0...parent.childNodes.length]
+					nthName = parent.childNodes[i].nodeName.toLowerCase()
+					continue if nthName is "#text"
+					nthStack.push nthName
 					if parent.childNodes[i] is elem
-						return ":nth-child(#{i})"
-			return ""
+						if nthStack.length > 1
+							nthStack[0] += ":first-child"
+						return nthStack.join(" + ")
+			return elem.nodeName.toLowerCase()
 		return (element) ->
 			hasId = notEmpty 0, element.id
 			hasClass = notEmpty 0, element.className
@@ -93,8 +90,8 @@ do ($ = window.jQuery) ->
 				when isRoot then ""
 				when not isElement then ""
 				when hasId then "#" + element.id
-				when hasClass then "." + element.className.split(" ").join(".")
-				else element.nodeName.toLowerCase() + nthChild(element)
+				when hasClass then "." + element.className.split(" ").join(".").replace(/\.$/,'')
+				else nthChild(element)
 			if hasId
 				return s
 			if hasParent
