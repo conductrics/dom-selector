@@ -43,12 +43,12 @@ do ($ = window.jQuery) ->
 				opacity: 0.9
 				zIndex: 99999999
 				background: "#ffc"
-			}, common
+			}, commonStyles
 		).find('p').css(
 			$.extend {
 				padding: 0
 				margin: "0 0 10px 0"
-			}, common
+			}, commonStyles
 		).find('p.current-selector').css(
 			color: '#226'
 		)

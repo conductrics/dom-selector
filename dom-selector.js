@@ -42,10 +42,10 @@
         opacity: 0.9,
         zIndex: 99999999,
         background: "#ffc"
-      }, common)).find('p').css($.extend({
+      }, commonStyles)).find('p').css($.extend({
         padding: 0,
         margin: "0 0 10px 0"
-      }, common)).find('p.current-selector').css({
+      }, commonStyles)).find('p.current-selector').css({
         color: '#226'
       });
     };
